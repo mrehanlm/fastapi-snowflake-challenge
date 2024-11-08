@@ -164,6 +164,6 @@ check_ungenerated_migrations:
 	$(PYTHON) -m alembic check
 
 
-.PHONY: start
-start:
+.PHONY: up
+up:
 	docker compose -f compose.yaml up --build
