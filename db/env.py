@@ -1,6 +1,7 @@
 from logging.config import fileConfig
 
 from alembic import context
+from alembic.ddl.impl import DefaultImpl
 from sqlalchemy import engine_from_config, pool
 
 # This has to be a wildcard in order to pull in all models for alembic.
@@ -28,6 +29,17 @@ target_metadata = base.Base.metadata  # noqa: F405
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+db_url = "snowflake://{user}:{password}@{account}/{database}/{schema}".format(
+    user=settings.SF_USER,
+    password=settings.SF_PASSWORD,
+    account=settings.SF_ACCOUNT,
+    database=settings.SF_DATABASE,
+    schema=settings.SF_SCHEMA,
+)
+
+
+class SnowflakeImpl(DefaultImpl):
+    __dialect__ = "snowflake"
 
 
 def run_migrations_offline() -> None:
@@ -43,7 +55,7 @@ def run_migrations_offline() -> None:
 
     """
     context.configure(
-        url=settings.database_url,
+        url=db_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -61,14 +73,13 @@ def run_migrations_online() -> None:
 
     """
     connectable = engine_from_config(
-        {"db.url": settings.database_url, "db.echo": "True"},
+        {"db.url": db_url, "db.echo": "True"},
         prefix="db.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
-
         with context.begin_transaction():
             context.run_migrations()
 

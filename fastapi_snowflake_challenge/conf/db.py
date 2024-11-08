@@ -2,4 +2,8 @@ from pydantic_settings import BaseSettings
 
 
 class DatabaseSettings(BaseSettings):
-    database_url: str = "sqlite:///./test.db"
+    SF_USER: str
+    SF_PASSWORD: str
+    SF_ACCOUNT: str
+    SF_DATABASE: str
+    SF_SCHEMA: str
