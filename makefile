@@ -1,5 +1,4 @@
 SHELL := /bin/bash
-MIGRATION_DATABASE:=./migrate.db
 
 PACKAGE_SLUG=fastapi_snowflake_challenge
 ifdef CI
@@ -82,15 +81,11 @@ tests: install pytest ruff_check black_check mypy_check dapperdata_check tomlsor
 
 .PHONY: pytest
 pytest:
-	$(PYTHON) -m pytest --cov=./${PACKAGE_SLUG} --cov-report=term-missing tests
-
-.PHONY: pytest_loud
-pytest_loud:
-	$(PYTHON) -m pytest -s --cov=./${PACKAGE_SLUG} --cov-report=term-missing tests
+	docker compose -f compose.yaml exec www /bin/bash -c "python -m pytest --cov=./${PACKAGE_SLUG} --cov-report=term-missing tests"
 
 .PHONY: ruff_check
 ruff_check:
-	$(PYTHON) -m ruff check
+	$(PYTHON) -m ruff check --fix
 
 .PHONY: black_check
 black_check:
@@ -161,10 +156,7 @@ clear_db:
 .PHONY: create_migration
 create_migration:
 	@if [ -z "$(MESSAGE)" ]; then echo "Please add a message parameter for the migration (make create_migration MESSAGE=\"database migration notes\")."; exit 1; fi
-	rm $(MIGRATION_DATABASE) | true
-	. .venv/bin/activate && DATABASE_URL=sqlite:///$(MIGRATION_DATABASE) python -m alembic upgrade head
-	. .venv/bin/activate && DATABASE_URL=sqlite:///$(MIGRATION_DATABASE) python -m alembic revision --autogenerate -m "$(MESSAGE)"
-	rm $(MIGRATION_DATABASE)
+	docker compose -f compose.yaml exec www /bin/bash -c "python -m alembic revision --autogenerate -m '$(MESSAGE)'"
 	$(PYTHON) -m ruff format ./db
 
 .PHONY: check_ungenerated_migrations
@@ -172,3 +164,6 @@ check_ungenerated_migrations:
 	$(PYTHON) -m alembic check
 
 
+.PHONY: start
+start:
+	docker compose -f compose.yaml up --build

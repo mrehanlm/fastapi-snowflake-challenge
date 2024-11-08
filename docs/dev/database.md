@@ -8,7 +8,7 @@ This project uses SQLAlchemy 1.4 and 2.0 APIs. It exposes the Async Engine and A
 
 ## Engines
 
-This project is geared towards Postgres and SQLite.
+This project is geared towards Snowflake.
 
 ## Models
 
@@ -19,7 +19,7 @@ Models exists in the `fastapi_snowflake_challenge/models` directory.
 
 Migrations are created with Alembic. It will automatically find all models in the `fastapi_snowflake_challenge/models` directory.
 
-Migrations can be using `make`. This method uses SQLite.
+Migrations can be using `make`.
 
 ```bash
 make create_migration MESSAGE="migration description"
@@ -38,6 +38,13 @@ This schema is generated with Paracelsus. To update run `make document_schema`.
 <!-- BEGIN_SQLALCHEMY_DOCS -->
 ```mermaid
 erDiagram
+  clients {
+    INTEGER id PK
+    DATETIME created_at "nullable"
+    VARCHAR(255) email UK
+    VARCHAR(255) name
+  }
+
 
 ```
 <!-- END_SQLALCHEMY_DOCS -->

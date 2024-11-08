@@ -162,3 +162,4 @@ cython_debug/
 
 # scm-version file
 fastapi_snowflake_challenge/_version.py
+volume

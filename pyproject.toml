@@ -10,18 +10,16 @@ license = {"file" = "LICENSE"}
 name = "fastapi_snowflake_challenge"
 readme = {file = "README.md", content-type = "text/markdown"}
 dependencies = [
-  "aiosqlite",
   "alembic",
-  "asyncpg",
   "fastapi",
-  "psycopg2-binary",
   "pydantic~=2.0",
   "pydantic-settings",
-  "SQLAlchemy"
+  "snowflake-sqlalchemy"
 ]
 
 [project.optional-dependencies]
 dev = [
+  "httpx",
   "build",
   "dapperdata",
   "glom",

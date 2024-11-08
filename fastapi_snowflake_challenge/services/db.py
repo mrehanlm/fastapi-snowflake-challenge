@@ -1,32 +1,29 @@
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from contextlib import contextmanager
+from typing import Generator
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from ..settings import settings
-
-# SQLAlchemy async engine requires non-standard driver DSN that don't work with other libraries.
-# We use the standard but transform it for the async engine.
-engine_mappings = {
-    "sqlite": "sqlite+aiosqlite",
-    "postgresql": "postgresql+asyncpg",
-}
-
-db_url = settings.database_url
-for find, replace in engine_mappings.items():
-    db_url = db_url.replace(find, replace)
+from fastapi_snowflake_challenge.settings import settings
 
 
-engine = create_async_engine(db_url, future=True, echo=settings.debug)
+db_url = "snowflake://{user}:{password}@{account}/{database}/{schema}".format(
+    user=settings.SF_USER,
+    password=settings.SF_PASSWORD,
+    account=settings.SF_ACCOUNT,
+    database=settings.SF_DATABASE,
+    schema=settings.SF_SCHEMA,
+)
+engine = create_engine(db_url, echo=settings.debug)
 
 
-@asynccontextmanager
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-    async with async_session() as session:
+@contextmanager
+def get_session() -> Generator[Session, None, None]:
+    async_session = sessionmaker(engine, class_=Session, expire_on_commit=False)
+    with async_session() as session:
         yield session
 
 
-async def get_session_depends() -> AsyncGenerator[AsyncSession, None]:
-    async with get_session() as session:
+def get_session_depends() -> Generator[Session, None, None]:
+    with get_session() as session:
         yield session
