@@ -1,0 +1,60 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=67.0", "setuptools_scm[toml]>=7.1"]
+
+[project]
+authors = [{"name" = "Muhammad Rehan"}]
+description = "This repository provides a RESTful API built with FastAPI and Snowflake, implementing basic CRUD operations for a clients table. It’s a simple, unprotected API for managing client data, ideal for learning FastAPI and Snowflake integration."
+dynamic = ["version"]
+license = {"file" = "LICENSE"}
+name = "fastapi_snowflake_challenge"
+readme = {file = "README.md", content-type = "text/markdown"}
+dependencies = [
+  "aiosqlite",
+  "alembic",
+  "asyncpg",
+  "fastapi",
+  "psycopg2-binary",
+  "pydantic~=2.0",
+  "pydantic-settings",
+  "SQLAlchemy"
+]
+
+[project.optional-dependencies]
+dev = [
+  "build",
+  "dapperdata",
+  "glom",
+  "mypy",
+  "paracelsus",
+  "pytest",
+  "pytest-cov",
+  "pytest-pretty",
+  "ruamel.yaml",
+  "ruff",
+  "toml-sort",
+  "uv"
+]
+
+[tool.coverage.run]
+omit = [
+  "./fastapi_snowflake_challenge/_version.py",
+  "./fastapi_snowflake_challenge/__init__.py"
+]
+
+[tool.ruff]
+exclude = [".venv", "./fastapi_snowflake_challenge/_version.py"]
+line-length = 120
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+
+[tool.setuptools.package-data]
+fastapi_snowflake_challenge = ["py.typed"]
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools_scm]
+fallback_version = "0.0.0-dev"
+write_to = "fastapi_snowflake_challenge/_version.py"
